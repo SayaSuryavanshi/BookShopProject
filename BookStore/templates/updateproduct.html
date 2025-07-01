@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+<div class="container">
+    <table>
+        <thead>
+            <tr>
+                <p class="bg-danger p-2 text-white text-center shadow mt-2 form-control w-60">Add Products</p>
+            </tr>
+            
+        </thead>
+        <tbody>
+            <tr>
+            <form action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ prdform.as_p }}
+              <tr>
+                <td><button> Add product</button></td>
+            </tr>
+            </form>
+            </tr>
+          
+        </tbody>
+    </table>
+    
+    
+</div>
+{% endblock main %}

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+
+<div class="container">
+    <div class="container">
+        <div class="row mt-5">
+    
+            {% for i in placeedordersdetails %}
+            <div class="col-md-2">
+                <div class="card-group">
+                    <div class="card">
+                      <img src="{{ i.books.prodimage.url}}" class="card-img-top" alt="..." height="250px">
+                      <div class="card-body">
+                        <h5 class="card-title">{{i.books.prodname|truncatechars:20}}</h5>
+                        <p class="card-text">{{i.quantity}}</p>
+                        <p class="card-text">{{i.order_date}}</p>
+                        <p class="card-text">Rs. {{i.total_price}}</p>
+                      </div>
+                      <div class="card-footer">
+                        <!-- <button type="button" class="btn btn-primary">View Book</button> -->
+                         <a href="#" class="btn btn-primary">{{i.status}}</a>
+                      </div>
+                    </div>
+                </div>
+                 
+            </div>
+            {% endfor %}
+        </div>
+    
+    </div>
+</div>
+
+{% endblock main %}

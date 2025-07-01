@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block main %}
+<div class="container">
+    <p class="container bg-primary p-2 text-white text-center shadow mt-2 form-control w-50">Customer Details Form</p> 
+</div>
+<div class="container my-3 shadow w-50">
+    <!-- <p class="container bg-primary p-2 text-white text-center shadow mt-2 form-control">Register Form</p>  -->
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{ cust.as_p }}
+        <input type="submit" class="btn btn-warning" value="Submit">
+    </form>
+</div>
+
+{% endblock main %}

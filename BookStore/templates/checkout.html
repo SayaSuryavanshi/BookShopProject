@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+<div class="container">
+    <div class="row mt-5">
+        <div class="col-md-10">
+            <div class="row">
+                {% for i in prod %}
+                <div class="col-md-2">
+                    <img src="{{i.pid.prodimage.url}}" alt="{{i.prodname}}" height="150px">
+                </div>
+                <div class="col-md-4">
+                    <h5 class="card-title">{{i.pid.prodname}}</h5>
+                    <p class="card-text">Rs.{{i.pid.prodprice}}</p> 
+                    <p class="card-text"> Quantity :{{i.qty}}</p>                     
+                </div>
+                <hr>
+                {% endfor %}  
+            </div>
+        </div>        
+        <div class="col-md-2">
+            <table>
+                <tr>
+                    <td><label for="">Name :</label></td>
+                    <td><p class="card-text">{{cust_details.custname}}</p></td>                    
+                </tr>
+                <tr>
+                    <td><label for="">Address :</label></td>
+                    <td><p class="card-text">{{cust_details.custaddress}}</p></td>
+                </tr>
+                <tr>
+                    <td><label for="">City :</label></td>
+                    <td><p class="card-text">{{cust_details.city}}</p></td>
+                </tr>
+                <tr>
+                    <td><label for="">State :</label></td>
+                    <td><p class="card-text">{{cust_details.state}}</p></td>
+                </tr>
+                <tr>
+                    <td><label for="">Pincode :</label></td>
+                    <td><p class="card-text">{{cust_details.pincode}}</p></td>
+                </tr>
+                <tr>
+                    <td><label for="">Contact :</label></td>
+                    <td><p class="card-text">{{cust_details.custcontact}}</p></td>       
+                </tr>               
+            </table>                       
+            <hr>
+            <h5> <b>Total is : {{total}} </b></h5>
+                       
+            <div class="row">
+                {{paypal_payment.render}}
+            </div>       
+        </div>         
+    </div>      
+</div>
+{% endblock main %}
+
