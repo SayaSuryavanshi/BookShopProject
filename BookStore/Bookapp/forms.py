@@ -2,28 +2,94 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django import forms
 from .models import Customers, Products
+from django.core.exceptions import ValidationError
 
-class Registerform(UserCreationForm):
-    password1=forms.CharField(label="Enter Password ", widget=forms.PasswordInput(attrs={'class':'form-control'}))
-    password2=forms.CharField(label="Confirm Password ", widget=forms.PasswordInput(attrs={'class':'form-control'}))
+from django import forms
+from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
+
+class RegistrationForm(forms.Form):
+    username = forms.CharField(
+        max_length=150,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter username'
+        })
+    )
+    first_name = forms.CharField(
+        max_length=30,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'First name'
+        })
+    )
+    last_name = forms.CharField(
+        max_length=30,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Last name'
+        })
+    )
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter email'
+        })
+    )
+    contact = forms.CharField(
+        max_length=15,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Contact number'
+        })
+    )
+    password = forms.CharField(
+        required=True,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter password'
+        })
+    )
+    confirm_password = forms.CharField(
+        required=True,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Confirm password'
+        })
+    )
+
     
-    class Meta:
-        model=User
-        fields=['username','first_name','last_name','email']
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if User.objects.filter(username=username).exists():
+            raise ValidationError("Username already exists.")
+        return username
 
-        labels={
-            'username':'Enter Username ',
-            'first_name':'Enter First Name  ',
-            'last_name':'Enter Last Name ',
-            'email':'Enter Email ',
-        }
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("Email already registered.")
+        return email
 
-        widgets={
-            'username':forms.TextInput(attrs={'class':'form-control'}),
-            'first_name':forms.TextInput(attrs={'class':'form-control'}),
-            'last_name':forms.TextInput(attrs={'class':'form-control'}),
-            'email':forms.TextInput(attrs={'class':'form-control'}),
-        }
+    def clean_contact(self):
+        contact = self.cleaned_data['contact']
+        if not contact.isdigit():
+            raise ValidationError("Contact must be numeric.")
+        if len(contact) < 10:
+            raise ValidationError("Contact must be at least 10 digits.")
+        return contact
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        confirm_password = cleaned_data.get("confirm_password")
+        if password and confirm_password and password != confirm_password:
+            self.add_error('confirm_password', "Passwords do not match.")
 
 class LoginForm(AuthenticationForm):
     username=forms.CharField(label="Enter Username ", widget=forms.TextInput(attrs={'class':'form-control'}))

@@ -46,5 +46,7 @@ urlpatterns = [
     path('range', views.range, name="range"),
     path('addproduct', views.addproduct, name="addproduct"),
     path('deleteProduct/<int:id>', views.deleteProduct, name="deleteProduct"),
-    path('updateproduct/<int:id>', views.updateproduct, name="updateproduct")
+    path('updateproduct/<int:id>', views.updateproduct, name="updateproduct"),
+    path('contact', views.contact, name="contact"),
+    path('aboutus', views.aboutus, name="aboutus")
 ]

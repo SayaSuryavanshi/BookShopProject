@@ -2,16 +2,26 @@
 {% load static %}
 
 {% block main %}
-<div class="container">
-    <p class="container bg-primary p-2 text-white text-center shadow mt-2 form-control w-50">Customer Details Form</p> 
-</div>
-<div class="container my-3 shadow w-50">
-    <!-- <p class="container bg-primary p-2 text-white text-center shadow mt-2 form-control">Register Form</p>  -->
-    <form action="" method="POST">
-        {% csrf_token %}
-        {{ cust.as_p }}
-        <input type="submit" class="btn btn-warning" value="Submit">
-    </form>
-</div>
+<div class="container d-flex justify-content-center align-items-center flex-column my-5">
+    
+    
+    <!-- Form Card -->
+    <div class="card shadow-lg w-100" style="max-width: 600px;">
+        <h2 class="bg-dark text-white py-2 px-4  shadow-sm d-inline-block">
+            <i class="bi bi-person-lines-fill me-4"></i>Address Details
+        </h2>
+        <div class="card-body p-4">
+            <form action="" method="POST" novalidate>
+                {% csrf_token %}
+                {{ cust.as_p }}
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-warning btn-lg rounded-pill shadow-sm">
+                        <i class="bi bi-check-circle me-1"></i> Submit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
+</div>
 {% endblock main %}

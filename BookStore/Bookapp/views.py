@@ -1,9 +1,10 @@
 from django.shortcuts import render, HttpResponse,redirect
 from .models import Categories, Products, Cart, Customers, Orders
-from .forms import Registerform, LoginForm, CustomersForm, ProductsForm
+from .forms import LoginForm, CustomersForm, ProductsForm, RegistrationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+
 
 # For Paypal payment
 from django.conf import settings
@@ -34,16 +35,31 @@ def categorydetails(request, id):
     return render(request,'index.html',{'cat':cate,'prod':prod})
 
 def register(request):
-    if request.method=="POST":
-        fm=Registerform(request.POST)
-        if fm.is_valid():
-            fm.save()
-            return redirect('logindetails')
-        else:
-            return redirect('register')
+    if request.method == "POST":
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            user = User.objects.create_user(
+                username=form.cleaned_data['username'],
+                first_name=form.cleaned_data['first_name'],
+                last_name=form.cleaned_data['last_name'],
+                email=form.cleaned_data['email'],
+                password=form.cleaned_data['password']
+            )
+            # Save address separately or in extended profile
+            # For now just print or pass in context
+            # address_info = Customers.objects.create(
+            #     address=form.cleaned_data['address'],
+            #     city=form.cleaned_data['city'],
+            #     state=form.cleaned_data['state'],
+            #     pincode=form.cleaned_data['pincode'],
+            #     contact=form.cleaned_data['contact']
+            # )
+            # Optionally, save to a separate model
+            messages.success(request, "Registration successful!")
+            return redirect("logindetails")
     else:
-        fm=Registerform()
-        return render(request,'register.html',{'fm':fm})
+        form = RegistrationForm()
+    return render(request, "register.html", {"form": form})
     
 def logindetails(request):
     if request.method=="POST":
@@ -153,7 +169,7 @@ def customerdetails(request):
         
     else:
         cust=CustomersForm()
-        return render(request,'custdetails.html',{'cust':cust})
+    return render(request,'custdetails.html',{'cust':cust})
 
 
 # Functionality to checkout purchase details
@@ -182,6 +198,9 @@ def checkout(request):
     total=del_charge+total
     cust_details=Customers.objects.filter(userid=userid).order_by('-id').first()
     
+    # Generate unique order ID
+    order_id = str(uuid.uuid4())
+
     # =================Paypa code=========================
     host= request.get_host() #will fetch the domain site is currently hosted on.
 
@@ -189,10 +208,10 @@ def checkout(request):
         'business': settings.PAYPAL_RECEIVER_EMAIL, #This is typically the email address
         'amount': total,    #The amount of money to be charged for the transcation
         'item_name':'BookStore',    #Describes the item being purchased
-        'invoice': str(uuid.uuid4()),    #A unique identifier for the invoice. It uses uuid.uuid4
+        'invoice': order_id,    #A unique identifier for the invoice. It uses uuid.uuid4
         'currency_code':'USD',
         'notify_url':f"http://{host}{reverse('paypal-ipn')}",       # The URL where Paypal will send
-        'return_url':f"http://{host}{reverse('paymentsuccess')}",   # The URL where the customer will success to payment
+        'return_url':f"http://{host}{reverse('paymentsuccess')}?invoice={order_id}",   # The URL where the customer will success to payment
         'cancel_url':f"http://{host}{reverse('paymentfailed')}",    # The URL where the customer will failed to payment
     }
     paypal_payment=PayPalPaymentsForm(initial=paypal_checkout)
@@ -203,6 +222,7 @@ def checkout(request):
 
 # To show Payment Success 
 def paymentsuccess(request):
+    order_id = request.GET.get('invoice')
     userid=request.user.id
     products=Cart.objects.filter(uid=userid)
     print(products)
@@ -226,12 +246,15 @@ def paymentsuccess(request):
         
         total=del_charge+total
 
+        request.session["total_amount"] = str(total)
+
         orderdetails=Orders.objects.create(customer=i.uid, books=i.pid, quantity=i.qty, total_price=total)
         orderdetails.save()
         i.delete()
 
     orderdetails=Orders.objects.filter(customer=request.user.id)
-    return render(request, 'paymentsuccess.html', {'orderdetails':orderdetails})
+    total_amount = request.session.get("total_amount", None)
+    return render(request, 'paymentsuccess.html', {'orderdetails':orderdetails, 'order_id':order_id , 'total_amount':total_amount})
 
 # To Show Payment Fail
 def paymentfailed(request):
@@ -454,3 +477,11 @@ def updateproduct(request, id):
         prdform=ProductsForm(instance=prdupdate)
     return render(request, 'updateproduct.html', {'prdform':prdform, 'prdupdate':prdupdate})
     
+# ContactUs
+def contact(request):
+    return render(request, 'contact.html')
+
+# AboutUs
+def aboutus(request):
+    return render(request, 'about.html')
+

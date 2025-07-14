@@ -2,29 +2,20 @@
 {% load static %}
 {% block main %}
 
-<div class="container">
-    <div class="row mt-5">
-
-        {% for i in orderdetails %}
-        <div class="col-md-2">
-            <div class="card-group">
-                <div class="card">
-                  <img src="{{ i.books.prodimage.url}}" class="card-img-top" alt="..." height="250px">
-                  <div class="card-body">
-                    <h5 class="card-title">{{i.books.prodname|truncatechars:20}}</h5>
-                    <p class="card-text">{{i.quantity}}</p>
-                    <p class="card-text">{{i.order_date}}</p>
-                    <p class="card-text">Rs. {{i.total_price}}</p>
-                  </div>
-                  <div class="card-footer">
-                    <!-- <button type="button" class="btn btn-primary">View Book</button> -->
-                     <a href="#" class="btn btn-primary">{{i.status}}</a>
-                  </div>
-                </div>
-            </div>
-             
+<div class="container text-center mt-5">
+    <div class="card shadow p-5">
+        <!-- <img src="{% static 'images/success.png' %}" alt="Payment Successful" class="mb-4" style="width: 120px;"> -->
+        <h1 class="text-success fw-bold">Payment Successful!</h1>
+        <p class="lead">Thank you for your order. Your payment has been received successfully.</p>
+        
+        <div class="alert alert-danger mt-4">
+            <strong>Order ID:</strong> {{ order_id }} <br>
+            <strong>Total Amount:</strong> ${{ total_amount }}
         </div>
-        {% endfor %}
+        
+        <a href="{% url 'placedorders' %}" class="btn btn-dark mt-3">View My Orders</a>
+        <a href="{% url 'home' %}" class="btn btn-warning mt-3">Continue Shopping</a>
     </div>
 </div>
+
 {% endblock main %}
